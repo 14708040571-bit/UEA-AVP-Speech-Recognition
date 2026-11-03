@@ -43,10 +43,16 @@ I developed and tested my project locally using Spyder before creating this GitH
 The private GitHub repository was created later to organise my existing code and track further changes.
 
 Local development evidence: [View screenshots](development_evidence/)
-
 ## AI Use Declaration
-Most of the project code was written by me. I used ChatGPT (OpenAI) to help understand technical concepts, assist with Python coding and debugging, and prepare project documentation and presentation materials.
 
-For example, ChatGPT helped identify and remove a syntax error in an earlier version of `train_model.py`. I reviewed and tested the final code and results myself.
+I used ChatGPT (OpenAI) to support my learning and assist with Python coding and debugging during this project.
+
+Specifically, ChatGPT helped me understand MFCC feature extraction, Mel filterbanks, the Discrete Cosine Transform (DCT), feature normalisation, CNN training, validation and independent testing. It also helped identify and correct a syntax error in an earlier version of `train_model.py`.
+
+I also used ChatGPT to assist with reviewing and editing parts of the repository documentation and preparing presentation materials. I have disclosed these uses for transparency.
+
+I reviewed and tested the code and experimental results. I take responsibility for understanding and explaining the implementation, design decisions and evaluation results.
+
+I will not use generative AI tools during the bench demo.
 
 **University of East Anglia | Audio-Visual Processing**
