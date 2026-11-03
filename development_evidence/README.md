@@ -7,4 +7,4 @@ The project was developed and tested in Spyder before
 the GitHub repository was created.
 
 These screenshots are supporting evidence of earlier
-local work, not Git commit history.Ω
+local work, not Git commit history.
