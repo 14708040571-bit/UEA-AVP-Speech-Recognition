@@ -6,7 +6,8 @@ A speaker-dependent speech recognition system for recognising 20 spoken names us
 
 ## Methods
 - Python, MFCC (13 coefficients), and a 2D CNN
-- 400 development recordings (320 training, 80 validation)
+- 400 development recordings, split into 320 training and 80 validation recordings for model selection
+- The final CNN was retrained on all 400 development recordings for 16 epochs
 - 100 independent test recordings
 - 2-second audio recordings at 16 kHz
 
