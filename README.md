@@ -2,190 +2,223 @@
 
 ## Overview
 
-A speaker-dependent speech recognition system for recognising 20 spoken names using Mel-Frequency Cepstral Coefficients (MFCCs) and a Convolutional Neural Network (CNN).
+This project implements a speaker-dependent speech recognition system designed to classify 20 spoken names using Mel-Frequency Cepstral Coefficients (MFCCs) and a Convolutional Neural Network (CNN).
 
-This project was developed for the Audio-Visual Processing coursework at the University of East Anglia (UEA).
+The project was developed for the Audio-Visual Processing coursework at the University of East Anglia (UEA).
 
-The system processes short speech recordings, extracts acoustic features, trains a CNN classifier, and predicts spoken names using either recorded WAV files or live microphone input.
+The system records and processes speech, extracts acoustic features, trains a CNN classifier, and predicts spoken names using either WAV files or live microphone input.
 
 ## Methods
 
 - **Programming language:** Python 3.11
 - **Development environment:** Spyder
-- **Audio format:** 2-second recordings at 16 kHz
-- **Recognition task:** Classification of 20 spoken names
+- **Audio format:** 16 kHz, 2-second recordings
+- **Recognition task:** 20 spoken-name classes
 - **Feature extraction:** 13 MFCC coefficients
 - **Classification model:** 2D Convolutional Neural Network (CNN)
 
 ### Dataset
 
-- 400 development recordings, with 20 recordings per name.
-- The development dataset was split into 320 training and 80 validation recordings for model selection.
-- The final CNN was retrained on all 400 development recordings for 16 epochs.
-- 100 independent test recordings, with 5 recordings per name.
+The development and independent test datasets were collected separately.
 
-### Feature Extraction
+- Development recordings: 400 (20 names × 20 recordings)
+- Training subset for model selection: 320 recordings
+- Validation subset for model selection: 80 recordings
+- Independent test recordings: 100 (20 names × 5 recordings)
 
-The MFCC extraction process includes:
+After model selection, the final CNN was trained on all 400 development recordings for 16 epochs.
+
+### MFCC Feature Extraction
+
+The MFCC extraction process consists of:
 
 1. Loading WAV audio recordings.
-2. Dividing the audio into 25 ms frames with a 10 ms frame step.
+2. Dividing audio into 25 ms frames with a 10 ms frame step.
 3. Applying a Hamming window.
 4. Computing the Fast Fourier Transform (FFT) and power spectrum.
 5. Applying 26 triangular Mel filterbanks.
 6. Computing logarithmic Mel filter energies.
 7. Applying the Discrete Cosine Transform (DCT).
-8. Retaining the first 13 MFCC coefficients.
+8. Retaining 13 MFCC coefficients.
 
-The resulting MFCC features are used as input to the CNN classifier.
+The resulting MFCC feature representation has a shape of `(199, 13)` for each recording.
 
-### Model Training
+### CNN Model
 
-A 2D CNN was used to learn local patterns from the extracted speech features.
+The selected CNN configuration includes:
 
-The final model configuration includes:
+- Two convolutional layers with 16 and 32 filters
+- Max-pooling layers
+- A fully connected layer with 64 neurons
+- Dropout rate: 0.3
+- Optimiser: Adam
+- Learning rate: 0.001
+- Batch size: 16
+- Final training epochs: 16
 
-- Two convolutional layers with 16 and 32 filters.
-- Max-pooling layers.
-- A fully connected layer with 64 neurons.
-- Dropout rate of 0.3.
-- Adam optimiser with a learning rate of 0.001.
-- Batch size of 16.
-- Final training for 16 epochs.
-
-Additional experiments investigated different training hyperparameters, including batch size, dropout rate and learning rate.
+Additional experiments were conducted to investigate the effects of batch size, dropout and learning rate.
 
 ## Results
 
 ### Feature Comparison
 
+Three acoustic feature representations were compared.
+
 | Feature Type | Validation Accuracy |
-|---|---|
+|---|---:|
 | Linear | 62.50% |
 | Mel | 61.25% |
-| MFCC | 81.25% |
+| MFCC | **81.25%** |
 
-MFCC features achieved the highest selected-model validation accuracy among the three feature representations.
+MFCC achieved the highest selected-model validation accuracy among the three feature representations.
 
-### Independent Testing
+### Independent Test Evaluation
 
-- **Selected-model MFCC validation accuracy:** 81.25%
-- **Independent test accuracy:** 33.00%
+| Evaluation | Result |
+|---|---:|
+| Selected-model validation accuracy | 81.25% |
+| Independent test accuracy | 33.00% |
+| Correct independent test predictions | 33 / 100 |
+| Incorrect independent test predictions | 67 / 100 |
 
-The independent test accuracy was considerably lower than the validation accuracy, indicating limitations in generalisation to recordings collected separately from the development dataset.
+The independent test accuracy was substantially lower than the validation accuracy, indicating limited generalisation to separately collected recordings.
 
-Possible contributing factors include the limited amount of training data and differences in pronunciation, recording conditions and speech timing.
+Possible contributing factors include the small development dataset, differences in pronunciation and recording conditions, and variations in speech timing.
+
+These results are reported separately because validation performance does not necessarily represent performance on unseen recordings.
 
 ## Project Files
 
-### Data Collection and Preparation
+The repository contains **14 Python scripts**. Six scripts form the main implementation and evaluation workflow, while eight supporting scripts document data collection, dataset preparation and additional experiments.
 
-- `record_dataset.py` — Records 400 training audio samples across 20 spoken-name classes.
-- `record_test_dataset.py` — Records 100 independent test audio samples.
-- `check_audio_quality.py` — Checks the quality of recorded audio.
-- `prepare_dataset.py` — Extracts MFCC features and prepares the training dataset.
-- `prepare_test_dataset.py` — Extracts MFCC features and prepares the independent test dataset.
+### Core Scripts (6)
 
-### Feature Extraction and Comparison
+| File | Purpose |
+|---|---|
+| `feature_extraction.py` | Extracts MFCC features from audio |
+| `feature_comparison.py` | Compares Linear, Mel and MFCC features |
+| `train_model.py` | Trains and validates CNN models |
+| `train_final_model.py` | Trains and saves the final CNN model |
+| `evaluate_test.py` | Evaluates the final model on independent test recordings |
+| `live_demo.py` | Performs recognition using microphone input or WAV files |
 
-- `feature_extraction.py` — Extracts MFCC features from audio recordings.
-- `feature_comparison.py` — Compares Linear, Mel and MFCC features.
+These scripts represent the main feature extraction, model development, evaluation and demonstration stages.
 
-### Model Training and Experiments
+### Supporting Scripts and Experiments (8)
 
-- `train_model.py` — Trains and validates the CNN model.
-- `experiment_batch_08.py` — Experiments with a batch size of 8.
-- `experiment_dropout_05.py` — Experiments with a dropout rate of 0.5.
-- `experiment_lr_0005.py` — Experiments with a learning rate of 0.0005.
-- `train_final_model.py` — Trains the final CNN using all 400 development recordings.
+| File | Purpose |
+|---|---|
+| `record_dataset.py` | Collects 400 development recordings |
+| `record_test_dataset.py` | Collects 100 independent test recordings |
+| `check_audio_quality.py` | Checks recorded audio quality |
+| `prepare_dataset.py` | Prepares MFCC features for development data |
+| `prepare_test_dataset.py` | Prepares MFCC features for independent testing |
+| `experiment_batch_08.py` | Investigates batch size 8 |
+| `experiment_dropout_05.py` | Investigates dropout rate 0.5 |
+| `experiment_lr_0005.py` | Investigates learning rate 0.0005 |
 
-### Evaluation and Demonstration
+These files are included to document the wider project workflow and experimental process.
 
-- `evaluate_test.py` — Evaluates the final model using independent test recordings.
-- `live_demo.py` — Demonstrates speech recognition using microphone input or WAV files.
+### Additional Files
 
-### Additional Files and Folders
-
-- `requirements.txt` — Lists the Python packages required for the project.
-- `models/` — Contains the trained CNN model and normalisation statistics.
-- `results/` — Contains project results and related outputs.
-- `development_evidence/` — Contains screenshots documenting local development.
-- `.gitignore` — Excludes personal recordings, local datasets and unnecessary generated files from version control.
+- `requirements.txt` — Python package dependencies
+- `models/` — Trained CNN model and normalisation statistics
+- `results/` — Evaluation results and project outputs
+- `development_evidence/` — Screenshots of local development
+- `.gitignore` — Excludes local recordings, datasets and unnecessary generated files
 
 ## Running the Project
 
 The project was developed using Python 3.11 and Spyder.
 
-Required Python packages are listed in `requirements.txt`.
-
-To install the dependencies, run:
+Install the required Python packages:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-The trained CNN model and normalisation statistics are available in the `models/` folder.
-
-The original speech recordings and processed datasets are stored locally and are not included in this repository.
-
-The current scripts use the local project path `~/Desktop/Assessment001`. This path must be adjusted when running the project on another computer.
+The saved CNN model and normalisation statistics are available in the `models/` directory.
 
 ### Live Demonstration
 
-The `live_demo.py` script supports:
+From the repository directory, run:
 
-- Recording speech using a microphone.
-- Predicting spoken names from WAV files.
-- Displaying prediction scores.
-- Showing the three highest-scoring predictions.
+```bash
+python live_demo.py
+```
 
-Input WAV files must be 2 seconds long with a sampling rate of 16 kHz.
+The demonstration supports:
 
-The demonstration uses the saved CNN model and normalisation statistics without retraining the model.
+- Live microphone recording
+- Prediction from WAV files
+- Displaying prediction scores
+- Displaying the top three predictions
+
+The system uses 16 kHz, 2-second audio recordings.
+
+The demonstration loads a saved CNN model and normalisation statistics. Retraining is not required for inference.
+
+### Local File Paths and Data
+
+The original WAV recordings and processed datasets are stored locally and are not included in this repository.
+
+Some scripts use the local project directory:
+
+`~/Desktop/Assessment001`
+
+These paths may need to be adjusted when running the project on another computer.
+
+The Live Demo also supports loading saved model files from the repository, although its existing local model-path priority should be checked when using different model versions.
 
 ## Limitations and Future Improvements
 
-The current system has several limitations:
+### Current Limitations
 
-- The development dataset contains a relatively small number of recordings.
-- The system uses a fixed 2-second input duration.
-- Recognition performance may be affected by differences in pronunciation and recording conditions.
-- Independent test accuracy is substantially lower than validation accuracy.
-- Some scripts depend on local file paths and audio-device configurations.
+- A relatively small development dataset
+- Fixed 2-second input duration
+- Sensitivity to pronunciation and recording conditions
+- Lower independent test accuracy than validation accuracy
+- Local file-path and audio-device dependencies
 
-Possible future improvements include:
+### Proposed Future Improvements
 
-- Collecting more diverse training recordings.
-- Applying audio data augmentation.
-- Investigating voice activity detection (VAD).
-- Improving model generalisation.
-- Making file paths and recording-device settings more portable.
+- Collecting more diverse speech recordings
+- Applying audio data augmentation
+- Investigating voice activity detection (VAD)
+- Improving model generalisation
+- Making file paths and microphone settings more portable
 
-These improvements are proposed future work and have not been implemented in the current system.
+These are proposed future improvements and have not been implemented in the current project.
 
 ## Development and Version Control
 
-I developed and tested my project locally using Spyder before creating this GitHub repository.
+The project was initially developed and tested locally using Spyder.
 
-The private GitHub repository was created later to organise my existing code and track further changes.
+The GitHub repository was subsequently created to organise the existing project files and maintain a record of further changes.
 
-The repository includes the main implementation, data preparation scripts, recording utilities and experimental scripts to document the project development process.
+The initial repository version contained the six main Python scripts. Additional scripts from the local project were later added to document data collection, dataset preparation and experimental work.
 
-The original speech recordings and processed datasets are kept locally rather than uploaded to GitHub.
+Later commits also included code review, documentation updates, formatting changes and fixes to improve usability.
 
-Local development evidence: [View screenshots](development_evidence/)
+The original recordings and processed datasets remain stored locally rather than being uploaded to GitHub.
+
+Development screenshots are available in [development_evidence](development_evidence/).
 
 ## AI Use Declaration
 
-I used ChatGPT (OpenAI) to support my learning and assist with Python coding and debugging during this project.
+I used ChatGPT (OpenAI) as an AI-assisted learning and development tool during this coursework.
 
-Specifically, ChatGPT helped me understand MFCC feature extraction, Mel filterbanks, the Discrete Cosine Transform (DCT), feature normalisation, CNN training, validation and independent testing. It also helped identify and correct a syntax error in an earlier version of `train_model.py`.
+ChatGPT assisted me with understanding technical concepts, including MFCC feature extraction, Mel filterbanks, DCT, feature normalisation, CNN training, validation and independent testing.
 
-I also used ChatGPT to assist with reviewing and editing parts of the repository documentation and preparing presentation materials. I have disclosed these uses for transparency.
+I also used ChatGPT to help review, debug and revise parts of my Python scripts. This included identifying a syntax error in an earlier version of `train_model.py`, reviewing code structure, and assisting with file-path and microphone-input issues.
 
-I reviewed and tested the code and experimental results. I take responsibility for understanding and explaining the implementation, design decisions and evaluation results.
+ChatGPT also assisted with documentation editing, GitHub organisation and the preparation of presentation materials.
 
-I will not use generative AI tools during the bench demo.
+I reviewed and tested the implementation and recorded the experimental results from my local development environment.
+
+I take responsibility for understanding and explaining the implementation, the experimental decisions and the reported results.
+
+During the assessed bench demonstration, I intend to explain and demonstrate the project independently, in accordance with the module's assessment requirements.
 
 ---
 
