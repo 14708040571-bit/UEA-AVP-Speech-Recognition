@@ -6,14 +6,14 @@ This project implements a speaker-dependent speech recognition system designed t
 
 The project was developed for the Audio-Visual Processing coursework at the University of East Anglia (UEA).
 
-The system records and processes speech, extracts acoustic features, trains a CNN classifier, and predicts spoken names using either recorded WAV files or live microphone input.
+The system records and processes speech, extracts acoustic features, trains a CNN classifier, and predicts spoken names using either WAV files or live microphone input.
 
 ## Methods
 
 - **Programming language:** Python 3.11
 - **Development environment:** Spyder
 - **Audio format:** 16 kHz, 2-second recordings
-- **Recognition task:** Classification of 20 spoken names
+- **Recognition task:** 20 spoken-name classes
 - **Feature extraction:** 13 MFCC coefficients
 - **Classification model:** 2D Convolutional Neural Network (CNN)
 
@@ -41,7 +41,7 @@ The MFCC extraction process consists of:
 7. Applying the Discrete Cosine Transform (DCT).
 8. Retaining 13 MFCC coefficients.
 
-Each recording produces an MFCC feature matrix with a shape of `(199, 13)`.
+The resulting MFCC feature representation has a shape of `(199, 13)` for each recording.
 
 ### CNN Model
 
@@ -56,7 +56,7 @@ The selected CNN configuration includes:
 - Batch size: 16
 - Final training epochs: 16
 
-Additional experiments investigated the effects of batch size, dropout rate and learning rate.
+Additional experiments were conducted to investigate the effects of batch size, dropout and learning rate.
 
 ## Results
 
@@ -83,11 +83,11 @@ MFCC achieved the highest selected-model validation accuracy among the three fea
 
 The independent test accuracy was substantially lower than the validation accuracy, indicating limited generalisation to separately collected recordings.
 
-Possible contributing factors include the relatively small development dataset, differences in pronunciation and recording conditions, and variations in speech timing.
+Possible contributing factors include the small development dataset, differences in pronunciation and recording conditions, and variations in speech timing.
 
-Validation and independent test results are reported separately because validation performance does not necessarily represent performance on new recordings.
+These results are reported separately because validation performance does not necessarily represent performance on unseen recordings.
+
 The difference between validation accuracy (81.25%) and independent test accuracy (33.00%) was 48.25 percentage points. This suggests that the model did not generalise well to the separately recorded test dataset. Although MFCC features performed best during model selection, the final CNN showed limited robustness when evaluated on new recordings. Possible reasons include the small dataset size, differences in recording conditions, and variations in pronunciation and speech timing. Further investigation would be needed to determine the main cause of this performance gap.
-
 ## Project Files
 
 The repository contains **14 Python scripts**. Six scripts form the main implementation and evaluation workflow, while eight supporting scripts document data collection, dataset preparation and additional experiments.
@@ -98,12 +98,12 @@ The repository contains **14 Python scripts**. Six scripts form the main impleme
 |---|---|
 | `feature_extraction.py` | Extracts MFCC features from audio |
 | `feature_comparison.py` | Compares Linear, Mel and MFCC features |
-| `train_model.py` | Trains and validates the CNN model |
+| `train_model.py` | Trains and validates CNN models |
 | `train_final_model.py` | Trains and saves the final CNN model |
 | `evaluate_test.py` | Evaluates the final model on independent test recordings |
 | `live_demo.py` | Performs recognition using microphone input or WAV files |
 
-These six scripts represent the main feature extraction, model development, evaluation and demonstration stages.
+These scripts represent the main feature extraction, model development, evaluation and demonstration stages.
 
 ### Supporting Scripts and Experiments (8)
 
@@ -118,15 +118,15 @@ These six scripts represent the main feature extraction, model development, eval
 | `experiment_dropout_05.py` | Investigates dropout rate 0.5 |
 | `experiment_lr_0005.py` | Investigates learning rate 0.0005 |
 
-These scripts are included to document the wider project workflow and experimental process.
+These files are included to document the wider project workflow and experimental process.
 
 ### Additional Files
 
 - `requirements.txt` — Python package dependencies
 - `models/` — Trained CNN model and normalisation statistics
 - `results/` — Evaluation results and project outputs
-- `development_evidence/` — Screenshots documenting local development
-- `.gitignore` — Excludes personal recordings, local datasets and unnecessary generated files
+- `development_evidence/` — Screenshots of local development
+- `.gitignore` — Excludes local recordings, datasets and unnecessary generated files
 
 ## Running the Project
 
@@ -138,23 +138,7 @@ Install the required Python packages:
 pip install -r requirements.txt
 ```
 
-### Model and Data Files
-
-The trained CNN model and normalisation statistics are included in the repository's `models/` folder.
-
-The `live_demo.py` script first loads these files from the repository. If they are unavailable, it attempts to load them from the original local project directory.
-
-The script displays the model file path when the model is successfully loaded.
-
-The saved-model demonstration can run without the original training dataset. However, reproducing the training experiments and independent test evaluation requires the original recordings and processed datasets.
-
-These datasets are stored locally and are not included in this repository.
-
-Some data preparation and training scripts still use the original local project path:
-
-`~/Desktop/Assessment001`
-
-These paths may need to be adjusted when running the project on another computer.
+The saved CNN model and normalisation statistics are available in the `models/` directory.
 
 ### Live Demonstration
 
@@ -171,15 +155,21 @@ The demonstration supports:
 - Displaying prediction scores
 - Displaying the top three predictions
 
-Input WAV files must contain 2 seconds of audio sampled at 16 kHz.
+The system uses 16 kHz, 2-second audio recordings.
 
-The demonstration uses the saved CNN model and normalisation statistics without retraining the model.
+The demonstration loads a saved CNN model and normalisation statistics. Retraining is not required for inference.
 
-When using microphone mode, the user can select an available audio input device. The device number depends on the computer and its connected audio devices.
+### Local File Paths and Data
 
-The script records 2 seconds of speech after a short countdown and displays the predicted spoken name and the three highest-scoring predictions.
+The original WAV recordings and processed datasets are stored locally and are not included in this repository.
 
-Prediction scores indicate the model's relative confidence and do not guarantee that the prediction is correct.
+Some scripts use the local project directory:
+
+`~/Desktop/Assessment001`
+
+These paths may need to be adjusted when running the project on another computer.
+
+The Live Demo also supports loading saved model files from the repository, although its existing local model-path priority should be checked when using different model versions.
 
 ## Limitations and Future Improvements
 
@@ -189,7 +179,7 @@ Prediction scores indicate the model's relative confidence and do not guarantee 
 - Fixed 2-second input duration
 - Sensitivity to pronunciation and recording conditions
 - Lower independent test accuracy than validation accuracy
-- Local file-path and audio-device dependencies in parts of the project
+- Local file-path and audio-device dependencies
 
 ### Proposed Future Improvements
 
@@ -209,11 +199,13 @@ The GitHub repository was subsequently created to organise the existing project 
 
 The initial repository version contained the six main Python scripts. Additional scripts from the local project were later added to document data collection, dataset preparation and experimental work.
 
-Later commits also included code review, documentation updates, formatting changes and fixes to improve usability, including improvements to model-path handling and microphone selection.
+Later commits also included code review, documentation updates, formatting changes and fixes to improve usability.
 
 The original recordings and processed datasets remain stored locally rather than being uploaded to GitHub.
 
 Development screenshots are available in [development_evidence](development_evidence/).
+
+## AI Use Declaration
 
 ## AI Use Declaration
 
@@ -230,7 +222,6 @@ I reviewed and tested the implementation and recorded the experimental results f
 I take responsibility for understanding and explaining the implementation, design decisions and evaluation results.
 
 During the assessed bench demonstration, I intend to explain and demonstrate the project independently, in accordance with the module's assessment requirements.
-
 ---
 
 **University of East Anglia | Audio-Visual Processing**
