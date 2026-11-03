@@ -42,6 +42,8 @@ def extract_mfcc(audio_file, frame_length_ms=25,
     spectrum = np.fft.rfft(frames, n=nfft, axis=1)
     power = np.abs(spectrum) ** 2 / nfft
 
+    # AI-assisted learning (ChatGPT, OpenAI):
+    # ChatGPT explained Mel-frequency spacing and triangular filters.
     # 6. Build 26 triangular Mel filters.
     high_mel = 2595 * np.log10(1 + (fs / 2) / 700)
 
@@ -70,6 +72,8 @@ def extract_mfcc(audio_file, frame_length_ms=25,
         np.maximum(energy, np.finfo(float).eps)
     )
 
+    # AI-assisted learning (ChatGPT, OpenAI):
+    # ChatGPT explained the role of DCT and selecting 13 MFCCs.
     # 8. Apply DCT and keep 13 MFCC coefficients.
     mfcc = dct(
         log_energy,
