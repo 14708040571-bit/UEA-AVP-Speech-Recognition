@@ -221,9 +221,11 @@ Presentation slides are available in [presentation](presentation/).
 
 ## AI Use Declaration
 
-I used ChatGPT (OpenAI) to support my learning and development during this coursework. It assisted with understanding technical concepts such as MFCC and CNN, as well as Python coding, debugging, code review, documentation and presentation preparation.
+I used ChatGPT (OpenAI) as a supporting tool for learning and development during this coursework. It helped me understand technical concepts such as MFCC feature extraction, Mel filterbanks, CNN training, and model evaluation.
 
-I reviewed and tested the suggested changes, conducted the experiments, and take responsibility for the final implementation and results. I am able to explain and demonstrate my project independently.
+ChatGPT also assisted with Python coding, debugging, and code review, particularly in areas such as audio recording, data preprocessing, feature extraction, and model testing. I also used it to improve project documentation, organise my GitHub repository, and prepare presentation materials.
+
+I reviewed and tested the suggested code changes, conducted the experiments, and analysed the results. I take responsibility for the final implementation and its outcomes, and I am able to explain and demonstrate my project independently.
 
 ---
 
