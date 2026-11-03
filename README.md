@@ -1,4 +1,3 @@
-
 # UEA Speech Recognition Project
 
 ## Overview
@@ -23,6 +22,11 @@ A speaker-dependent speech recognition system for recognising 20 spoken names us
 - `train_final_model.py` — Final CNN training
 - `evaluate_test.py` — Independent testing
 - `live_demo.py` — Microphone and WAV-file demonstration
+
+## Development and Version Control
+I developed and tested my project locally using Spyder before creating this GitHub repository.
+
+The private GitHub repository was created later to organise my existing code and track further changes.
 
 ## AI Use Declaration
 Most of the project code was written by me. I used ChatGPT (OpenAI) to help understand technical concepts, assist with Python coding and debugging, and prepare project documentation and presentation materials.
