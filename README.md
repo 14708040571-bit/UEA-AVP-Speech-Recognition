@@ -32,5 +32,5 @@ The private GitHub repository was created later to organise my existing code and
 Most of the project code was written by me. I used ChatGPT (OpenAI) to help understand technical concepts, assist with Python coding and debugging, and prepare project documentation and presentation materials.
 
 For example, ChatGPT helped identify and remove a syntax error in an earlier version of `train_model.py`. I reviewed and tested the final code and results myself.
-
+Local development evidence: [View screenshots](development_evidence/)
 **University of East Anglia | Audio-Visual Processing**
