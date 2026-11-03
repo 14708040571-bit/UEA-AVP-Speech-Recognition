@@ -220,7 +220,7 @@ I used ChatGPT (OpenAI) as an AI-assisted learning and development tool during t
 
 ChatGPT assisted me with understanding technical concepts, including MFCC feature extraction, Mel filterbanks, the Discrete Cosine Transform (DCT), feature normalisation, CNN training, validation and independent testing.
 
-I also used ChatGPT to assist with Python coding, code review, debugging and revisions to parts of the implementation. This included identifying a syntax error in an earlier version of `train_model.py`, reviewing code structure, and suggesting or improving code related to model-path handling, microphone device selection and input validation.
+I also used ChatGPT to assist with Python coding, debugging, code review and revisions to selected parts of the implementation. This included assistance with audio-device selection, recording input validation, audio quality checks, dataset validation, feature normalisation, CNN code organisation, prediction reporting and model-path handling. ChatGPT also helped identify a syntax error in an earlier version of `train_model.py`.
 
 ChatGPT also assisted with documentation editing, GitHub organisation and the preparation of presentation materials.
 
