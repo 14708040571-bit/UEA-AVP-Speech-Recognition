@@ -18,14 +18,16 @@ from feature_extraction import extract_mfcc
 local_project = Path.home() / "Desktop" / "Assessment001"
 repository_project = Path(__file__).resolve().parent
 
+
 if (
-    (local_project / "models/final_speech_model.keras").is_file()
+    (repository_project / "models/final_speech_model.keras").is_file()
     and
-    (local_project / "models/normalisation_stats.npz").is_file()
+    (repository_project / "models/normalisation_stats.npz").is_file()
 ):
-    project = local_project
-else:
     project = repository_project
+else:
+    project = local_project
+
 
 model_file = project / "models/final_speech_model.keras"
 stats_file = project / "models/normalisation_stats.npz"
@@ -41,6 +43,7 @@ if not stats_file.is_file():
     )
 
 model = tf.keras.models.load_model(model_file)
+print(f"Model loaded from: {model_file}")
 
 stats = np.load(stats_file)
 mean = stats["feature_mean"]
