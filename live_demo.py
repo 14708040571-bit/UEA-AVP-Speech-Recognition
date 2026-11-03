@@ -1,125 +1,182 @@
 
 from pathlib import Path
-import csv
+import time
 import numpy as np
-import matplotlib.pyplot as plt
+import sounddevice as sd
+import soundfile as sf
 import tensorflow as tf
+from feature_extraction import extract_mfcc
 
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
-
-
-# 1. File paths
+# Load the saved model and training statistics.
 project = Path.home() / "Desktop" / "Assessment001"
-results = project / "results"
-results.mkdir(exist_ok=True)
+model = tf.keras.models.load_model(project / "models/final_speech_model.keras")
+stats = np.load(project / "models/normalisation_stats.npz")
+mean, std, names = stats["feature_mean"], stats["feature_std"], stats["names"]
 
-test_file = project / "data/processed/test_mfcc.npz"
-model_file = project / "models/final_speech_model.keras"
-stats_file = project / "models/normalisation_stats.npz"
-
-csv_file = results / "final_test_predictions.csv"
-cm_file = results / "final_test_confusion_matrix.png"
+sample_rate = 16000
+demo_file = project / "data/demo/live_demo.wav"
+demo_file.parent.mkdir(parents=True, exist_ok=True)
 
 
-# 2. Load test data and training statistics
-data = np.load(test_file)
-stats = np.load(stats_file)
+# 1. Predict a name from one WAV file.
+def predict_wav(wav_file, show_top3=False):
+    """Predict one 2-second, 16 kHz WAV file with the saved CNN."""
 
-X_test = data["X_test"].copy()
-y_test = data["y_test"]
-names = data["names"]
-file_names = data["file_names"]
+    audio, sr = sf.read(wav_file)
 
-print("Test data:", X_test.shape)
-print("Classes:", len(names))
+    if sr != sample_rate or len(audio) != 2 * sample_rate:
+        raise ValueError("Expected a 2-second WAV at 16000 Hz.")
 
-if X_test.shape != (100, 199, 13) or y_test.shape != (100,):
-    raise ValueError("Unexpected test data shape")
+    # Extract 199 x 13 MFCC features.
+    mfcc = extract_mfcc(wav_file)
 
-if not np.array_equal(names, stats["names"]):
-    raise ValueError("Class names do not match")
+    if mfcc.shape != (199, 13):
+        raise ValueError(f"Unexpected MFCC shape: {mfcc.shape}")
 
+    # Use saved normalisation values.
+    X = ((mfcc[None, ...] - mean) / std)[..., None]
 
-# 3. Normalise test data
-mean = stats["feature_mean"]
-std = stats["feature_std"]
+    # AI-assisted learning (ChatGPT, OpenAI):
+    # ChatGPT explained prediction scores and possible classification errors.
+    # Predict with the trained CNN.
+    scores = model.predict(X, verbose=0)[0]
+    best = int(np.argmax(scores))
 
-X_test = ((X_test - mean) / std)[..., np.newaxis]
+    print(
+        f"{Path(wav_file).name}: "
+        f"{names[best]} ({scores[best] * 100:.2f}%)"
+    )
 
+    # Show the three highest predictions.
+    if show_top3:
+        print("Top 3:")
 
-# AI-assisted learning (ChatGPT, OpenAI):
-# ChatGPT clarified independent testing versus development validation.
-# 4. Load model and evaluate
-model = tf.keras.models.load_model(model_file)
-
-test_loss, test_acc = model.evaluate(X_test, y_test, verbose=0)
-
-probabilities = model.predict(X_test, verbose=0)
-predictions = np.argmax(probabilities, axis=1)
-confidence = np.max(probabilities, axis=1)
-
-correct = np.sum(predictions == y_test)
-wrong = np.sum(predictions != y_test)
-
-print("\nINDEPENDENT TEST RESULTS")
-print(f"Accuracy: {test_acc * 100:.2f}%")
-print(f"Loss: {test_loss:.4f}")
-print(f"Correct: {correct}")
-print(f"Wrong: {wrong}")
+        for rank, i in enumerate(np.argsort(scores)[-3:][::-1], 1):
+            print(
+                f"  {rank}. {names[i]}: "
+                f"{scores[i] * 100:.2f}%"
+            )
 
 
-# 5. Accuracy for each name
-print("\nPer-class accuracy:")
+# 2. Record speech using the microphone.
+def microphone_demo():
+    """Record a name and predict it."""
 
-for i, name in enumerate(names):
-    mask = y_test == i
-    total = np.sum(mask)
-    class_correct = np.sum(predictions[mask] == y_test[mask])
-    accuracy = class_correct / total * 100
+    print(sd.query_devices())
 
-    print(f"{name}: {class_correct}/{total} = {accuracy:.0f}%")
+    choice = input("Microphone ID (Enter for default): ").strip()
+    device = int(choice) if choice else None
+
+    while True:
+        if input("\nEnter to record, q to quit: ").strip().lower() == "q":
+            break
+
+        # Countdown before recording.
+        for second in (3, 2, 1):
+            print(second)
+            time.sleep(1)
+
+        print("SPEAK NOW!")
+
+        # Record two seconds at 16 kHz.
+        audio = sd.rec(
+            32000,
+            samplerate=sample_rate,
+            channels=1,
+            dtype="float32",
+            device=device
+        )
+
+        sd.wait()
+
+        # Check the recording volume.
+        peak = np.max(np.abs(audio))
+        rms = np.sqrt(np.mean(audio ** 2))
+
+        print(f"Peak: {peak:.4f}, RMS: {rms:.4f}")
+
+        if peak < 0.01 or rms < 0.001:
+            print("Audio is too quiet. Try again.")
+            continue
+
+        # Save the recording and predict the name.
+        sf.write(demo_file, audio, sample_rate, subtype="PCM_16")
+
+        predict_wav(demo_file, show_top3=True)
 
 
-# 6. Confusion matrix
-cm = confusion_matrix(y_test, predictions)
+# 3. Predict names from up to 10 WAV files.
+def batch_demo():
+    """Select 1-10 WAV files and predict each name."""
 
-fig, ax = plt.subplots(figsize=(14, 14))
-ConfusionMatrixDisplay(
-    confusion_matrix=cm,
-    display_labels=names
-).plot(ax=ax, xticks_rotation=90, values_format="d")
+    # Open a file selection window.
+    try:
+        from tkinter import Tk, filedialog
 
-plt.title("Independent Test Confusion Matrix")
-plt.tight_layout()
-plt.savefig(cm_file, dpi=300, bbox_inches="tight")
-plt.show()
+        root = Tk()
+        root.withdraw()
+
+        files = filedialog.askopenfilenames(
+            title="Select up to 10 WAV files",
+            filetypes=[("WAV audio", "*.wav")]
+        )
+
+        root.destroy()
+
+    except Exception:
+        # Use manual file paths if the window is unavailable.
+        print("File picker unavailable. Enter WAV paths one at a time.")
+
+        files = []
+
+        for i in range(10):
+            path = input(
+                f"WAV {i + 1} path (Enter to finish): "
+            ).strip().strip('"').strip("'")
+
+            if not path:
+                break
+
+            files.append(str(Path(path).expanduser()))
+
+    if not files:
+        print("No files selected.")
+        return
+
+    if len(files) > 10:
+        print("Please select no more than 10 WAV files.")
+        return
+
+    # Predict every selected audio file.
+    print(f"\nBATCH PREDICTIONS ({len(files)} files)")
+
+    for wav_file in files:
+        try:
+            predict_wav(wav_file)
+
+        except (OSError, ValueError) as error:
+            print(f"{Path(wav_file).name}: ERROR - {error}")
 
 
-# 7. Save predictions to CSV
-with open(csv_file, "w", newline="", encoding="utf-8") as f:
-    writer = csv.writer(f)
-    writer.writerow([
-        "File", "Actual", "Predicted",
-        "Confidence_Percent", "Correct"
-    ])
+# 4. Main menu.
+if __name__ == "__main__":
 
-    for i in range(len(y_test)):
-        writer.writerow([
-            str(file_names[i]),
-            str(names[y_test[i]]),
-            str(names[predictions[i]]),
-            f"{confidence[i] * 100:.2f}",
-            predictions[i] == y_test[i]
-        ])
+    print("SPEECH RECOGNITION DEMO")
+    print("Classes:", len(names))
 
+    while True:
+        mode = input(
+            "\n1 = Microphone, 2 = WAV files (1-10), q = Quit: "
+        ).strip().lower()
 
-# 8. Final summary
-print("\nFINAL SYSTEM SUMMARY")
-print("Training recordings: 400")
-print("Independent test recordings: 100")
-print("Classes: 20")
-print("Feature: 13 MFCC coefficients")
-print("Validation accuracy: 81.25%")
-print(f"Independent test accuracy: {test_acc * 100:.2f}%")
-print("Confusion matrix:", cm_file)
-print("Prediction CSV:", csv_file)
+        if mode == "1":
+            microphone_demo()
+
+        elif mode == "2":
+            batch_demo()
+
+        elif mode == "q":
+            break
+
+        else:
+            print("Please choose 1, 2 or q.")
