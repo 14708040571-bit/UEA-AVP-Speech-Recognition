@@ -47,6 +47,8 @@ std = stats["feature_std"]
 X_test = ((X_test - mean) / std)[..., np.newaxis]
 
 
+# AI-assisted learning (ChatGPT, OpenAI):
+# ChatGPT clarified independent testing versus development validation.
 # 4. Load model and evaluate
 model = tf.keras.models.load_model(model_file)
 
