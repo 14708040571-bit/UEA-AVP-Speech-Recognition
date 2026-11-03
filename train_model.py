@@ -1,8 +1,7 @@
 
 # AI-assisted debugging (ChatGPT, OpenAI):
-# ChatGPT helped identify and remove a syntax error
-# in an earlier version of this script.
-# I reviewed and tested the corrected code myself.
+# ChatGPT helped identify and remove an accidental '=' at the start
+# of an earlier version of this script. I ran and checked the corrected code.
 
 from pathlib import Path
 import numpy as np
@@ -45,12 +44,8 @@ print("Validation:", len(y_val))
 
 
 # 3. Normalisation
-
-# AI-assisted explanation (ChatGPT, OpenAI):
-# ChatGPT helped me understand feature normalisation,
-# including mean, standard deviation, and numerical stability.
-# I reviewed and tested the implementation myself.
-
+# AI-assisted learning (ChatGPT, OpenAI):
+# ChatGPT explained training-only mean/std and numerical stability.
 mean = np.mean(X_train, axis=(0, 1), keepdims=True)
 std = np.std(X_train, axis=(0, 1), keepdims=True)
 std = np.where(std < 1e-8, 1.0, std)
