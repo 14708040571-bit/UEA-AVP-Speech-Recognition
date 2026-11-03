@@ -86,6 +86,7 @@ The independent test accuracy was substantially lower than the validation accura
 Possible contributing factors include the relatively small development dataset, differences in pronunciation and recording conditions, and variations in speech timing.
 
 Validation and independent test results are reported separately because validation performance does not necessarily represent performance on new recordings.
+The difference between validation accuracy (81.25%) and independent test accuracy (33.00%) was 48.25 percentage points. This suggests that the model did not generalise well to the separately recorded test dataset. Although MFCC features performed best during model selection, the final CNN showed limited robustness when evaluated on new recordings. Possible reasons include the small dataset size, differences in recording conditions, and variations in pronunciation and speech timing. Further investigation would be needed to determine the main cause of this performance gap.
 
 ## Project Files
 
