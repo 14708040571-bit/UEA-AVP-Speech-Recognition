@@ -224,6 +224,7 @@ Presentation slides are available in [presentation](presentation/).
 I used ChatGPT (OpenAI) to support my learning and development during this coursework. It assisted with understanding technical concepts such as MFCC and CNN, as well as Python coding, debugging, code review, documentation and presentation preparation.
 
 I reviewed and tested the suggested changes, conducted the experiments, and take responsibility for the final implementation and results. I am able to explain and demonstrate my project independently.
+
 ---
 
 **University of East Anglia | Audio-Visual Processing**
