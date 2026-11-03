@@ -89,6 +89,8 @@ Further investigation would be needed to determine the main cause of this perfor
 
 ## Project Files
 
+All 14 Python scripts are located in the `src/` directory.
+
 The repository contains **14 Python scripts**. Six scripts form the main implementation and evaluation workflow, while eight supporting scripts document data collection, dataset preparation and additional experiments.
 
 ### Core Scripts (6)
@@ -161,7 +163,7 @@ These paths may need to be adjusted when running the project on another computer
 From the repository directory, run:
 
 ```bash
-python live_demo.py
+python src/live_demo.py
 ```
 
 The demonstration supports:

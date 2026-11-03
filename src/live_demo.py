@@ -16,7 +16,7 @@ from feature_extraction import extract_mfcc
 # can use the original project or the repository folder.
 
 local_project = Path.home() / "Desktop" / "Assessment001"
-repository_project = Path(__file__).resolve().parent
+repository_project = Path(__file__).resolve().parent.parent
 
 
 if (
