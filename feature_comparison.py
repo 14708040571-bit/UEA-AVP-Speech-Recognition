@@ -170,6 +170,8 @@ print("Mel:", X_mel.shape)
 print("MFCC:", X_mfcc.shape)
 
 
+# AI-assisted learning (ChatGPT, OpenAI):
+# ChatGPT helped explain fair validation across Linear, Mel and MFCC.
 # 6. Use the same train/validation split for all features.
 train_idx, val_idx = train_test_split(
     np.arange(len(y)),
