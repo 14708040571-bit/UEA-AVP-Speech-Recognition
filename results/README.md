@@ -9,7 +9,7 @@ This folder contains the experimental results of my speech recognition system.
 - Selected epoch: 16
 - Validation loss at the selected epoch: 0.6603
 
-The model checkpoint at epoch 16 was selected based on the lowest validation loss. Although epoch 17 reached 82.50% validation accuracy, its validation loss was slightly higher.
+The validation experiment selected epoch 16 because it achieved the lowest validation loss (0.6603), with a validation accuracy of 81.25%. Although epoch 17 reached 82.50% validation accuracy, its validation loss was slightly higher. The final CNN was then trained separately on all 400 development recordings for 16 epochs.
 
 ## Independent Test Results
 - Test recordings: 100
