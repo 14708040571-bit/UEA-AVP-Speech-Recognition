@@ -1,11 +1,11 @@
+
 from pathlib import Path
 import sounddevice as sd
 import soundfile as sf
 import time
 
-print("Assessment 001")
-print("Dataset setup started")
 
+# Define the 20 spoken-name classes.
 names = [
     "Aaron",
     "Alex",
@@ -28,48 +28,86 @@ names = [
     "Ziang",
     "Zihan"
 ]
+
+
+print("Assessment 001")
+print("Dataset setup started")
 print("Number of names:", len(names))
 
-project_folder = Path.home() / "Desktop" / "Assessment001"
 
+# Set the project and training data paths.
+project_folder = Path.home() / "Desktop" / "Assessment001"
 train_folder = project_folder / "data" / "train"
 
 print("Training folder:")
 print(train_folder)
+
+
+# Create a separate folder for each name.
 for name in names:
     name_folder = train_folder / name
     name_folder.mkdir(parents=True, exist_ok=True)
     print("Created:", name_folder)
+
 print("Dataset folders are ready!")
 
+
+# Audio recording settings.
 fs = 16000
 duration = 2
 
-print()
-print("开始正式采集训练数据")
-print("每个名字目标：20 条录音")
-print()
 
+# ChatGPT helped write this function to support audio device selection.
+def choose_device(label):
+    while True:
+        answer = input(
+            f"{label} device ID (Enter for default): "
+        ).strip()
+
+        if not answer:
+            return None
+
+        try:
+            return int(answer)
+
+        except ValueError:
+            print(
+                "Please enter a valid device ID "
+                "or press Enter."
+            )
+
+
+print("\nAvailable audio devices:")
+print(sd.query_devices())
+
+mic_device = choose_device("Microphone")
+playback_device = choose_device("Playback")
+
+
+print("\nStarting training data collection.")
+print("Target: 20 recordings per name.")
+print("Total: 400 recordings.")
+
+
+# Record the training samples for each name.
 for test_name in names:
 
     name_folder = train_folder / test_name
 
-    # 找到这个名字下一个应该使用的编号
+    # Find the next available recording number.
     next_number = 1
 
-    while (name_folder / f"{test_name}_{next_number:02d}.wav").exists():
+    while (
+        name_folder / f"{test_name}_{next_number:02d}.wav"
+    ).exists():
         next_number += 1
 
-    # 如果已经有20条，直接进入下一个名字
     if next_number > 20:
-        print()
-        print(f"{test_name} 已经有 20 条录音，跳过。")
+        print(
+            f"\n{test_name}: 20 recordings already exist. "
+            "Skipping."
+        )
         continue
-
-
-    # ==========================================
-    # 一直录这个名字，直到达到20条
-    # ==========================================
 
     while next_number <= 20:
 
@@ -80,20 +118,16 @@ for test_name in names:
 
         while True:
 
-            print()
-            print("--------------------------------")
+            print("\n--------------------------------")
             print(
-                f"准备录制："
+                f"Preparing to record: "
                 f"{test_name}_{next_number:02d}.wav"
             )
-            print(
-                f"当前进度："
-                f"{next_number}/20"
-            )
-            print(f"请说：{test_name}")
+            print(f"Progress: {next_number}/20")
+            print(f"Please say: {test_name}")
             print("--------------------------------")
 
-            # 3秒倒计时
+            # Three-second countdown.
             for i in range(3, 0, -1):
                 print(i)
                 time.sleep(1)
@@ -104,7 +138,7 @@ for test_name in names:
                 int(duration * fs),
                 samplerate=fs,
                 channels=1,
-                device=3
+                device=mic_device
             )
 
             sd.wait()
@@ -115,33 +149,28 @@ for test_name in names:
                 "Maximum amplitude:",
                 recording.max()
             )
-
             print(
                 "Minimum amplitude:",
                 recording.min()
             )
 
-
-            # 播放刚录的声音
+            # Play the recording for quality checking.
             print("Playing recording...")
 
             sd.play(
                 recording,
                 fs,
-                device=4
+                device=playback_device
             )
 
             sd.wait()
 
             print("Playback finished!")
 
-
-            # 询问是否保存
             choice = input(
-                "保存吗？"
-                "(y = 保存 / r = 重录 / q = 退出): "
+                "Save this recording? "
+                "(y = save / r = retry / q = quit): "
             ).strip().lower()
-
 
             if choice == "y":
 
@@ -152,41 +181,34 @@ for test_name in names:
                 )
 
                 print(
-                    f"✓ 已保存："
-                    f"{output_file.name}"
+                    f"Saved successfully: {output_file.name}"
                 )
 
-                # 保存成功后进入下一编号
                 next_number += 1
-
                 break
-
 
             elif choice == "r":
 
                 print(
-                    "✗ 不保存，"
-                    "重新录制这一条。"
+                    "Recording discarded. "
+                    "Please try again."
                 )
-
 
             elif choice == "q":
 
-                print(
-                    "已退出录音程序。"
-                )
-
+                print("Recording process stopped.")
                 raise SystemExit
-
 
             else:
 
                 print(
-                    "请输入 y、r 或 q。"
+                    "Invalid option. "
+                    "Please enter y, r, or q."
                 )
 
+    print("\n==============================")
+    print(f"{test_name}: 20 recordings completed.")
+    print("==============================")
 
-    print()
-    print("==============================")
-    print(f"✓ {test_name} 已完成 20 条录音")
-    print("==============================")
+
+print("\nTraining data collection completed!")
