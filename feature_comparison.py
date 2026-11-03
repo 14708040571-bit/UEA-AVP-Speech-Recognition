@@ -6,7 +6,9 @@ import tensorflow as tf
 
 from sklearn.model_selection import train_test_split
 from tensorflow.keras import Sequential
-from tensorflow.keras.layers import Input, Conv2D, MaxPooling2D, Flatten, Dense, Dropout
+from tensorflow.keras.layers import (
+    Input, Conv2D, MaxPooling2D, Flatten, Dense, Dropout
+)
 from tensorflow.keras.callbacks import EarlyStopping
 
 from feature_extraction import extract_mfcc
@@ -72,6 +74,7 @@ def mel_to_hz(mel):
     return 700 * (10 ** (mel / 2595) - 1)
 
 
+# ChatGPT helped explain Mel-frequency spacing and filter construction.
 def mel_filterbank():
 
     mel_points = np.linspace(
@@ -170,9 +173,8 @@ print("Mel:", X_mel.shape)
 print("MFCC:", X_mfcc.shape)
 
 
-# AI-assisted learning (ChatGPT, OpenAI):
-# ChatGPT helped explain fair validation across Linear, Mel and MFCC.
 # 6. Use the same train/validation split for all features.
+# ChatGPT helped explain fair comparison using a shared data split.
 train_idx, val_idx = train_test_split(
     np.arange(len(y)),
     test_size=0.2,
@@ -190,7 +192,7 @@ def train_model(X, name):
     y_train = y[train_idx]
     y_val = y[val_idx]
 
-    # Calculate statistics from training data only.
+    # ChatGPT helped explain training-only feature normalisation.
     mean = np.mean(X_train, axis=(0, 1), keepdims=True)
     std = np.std(X_train, axis=(0, 1), keepdims=True)
     std = np.where(std < 1e-8, 1.0, std)
@@ -201,7 +203,7 @@ def train_model(X, name):
     tf.keras.backend.clear_session()
     tf.keras.utils.set_random_seed(42)
 
-    # Build a CNN with two convolutional layers.
+    # ChatGPT helped explain the CNN architecture and dropout.
     model = Sequential([
         Input(shape=X_train.shape[1:]),
 

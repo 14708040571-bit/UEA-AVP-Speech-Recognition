@@ -9,22 +9,22 @@ def extract_mfcc(audio_file, frame_length_ms=25,
                  frame_step_ms=10, nfft=512,
                  n_filters=26, n_mfcc=13):
 
-    # 1. Load a WAV file and use one audio channel.
+    # Load WAV audio and use one channel.
     signal, fs = sf.read(audio_file)
 
     if signal.ndim > 1:
         signal = signal[:, 0]
 
-    # 2. Set the frame length (25 ms) and hop (10 ms).
+    # Set the frame length and step.
     frame_length = int(fs * frame_length_ms / 1000)
     frame_step = int(fs * frame_step_ms / 1000)
 
-    # Keep at least one frame and pad the final frame if needed.
+    # Calculate the number of frames.
     n_frames = max(1, 1 + int(np.ceil(
         (len(signal) - frame_length) / frame_step
     )))
 
-    # 3. Pad the end and split the signal into frames.
+    # Pad the signal and divide it into frames.
     padded_length = (n_frames - 1) * frame_step + frame_length
     signal = np.pad(signal, (0, padded_length - len(signal)))
 
@@ -35,16 +35,14 @@ def extract_mfcc(audio_file, frame_length_ms=25,
 
     frames = signal[indices]
 
-    # 4. Reduce spectral leakage with a Hamming window.
+    # Apply a Hamming window.
     frames = frames * np.hamming(frame_length)
 
-    # 5. Convert frames to a power spectrum.
+    # ChatGPT assisted with understanding FFT and power spectra.
     spectrum = np.fft.rfft(frames, n=nfft, axis=1)
     power = np.abs(spectrum) ** 2 / nfft
 
-    # AI-assisted learning (ChatGPT, OpenAI):
-    # ChatGPT explained Mel-frequency spacing and triangular filters.
-    # 6. Build 26 triangular Mel filters.
+    # ChatGPT helped explain Mel-frequency filterbank construction.
     high_mel = 2595 * np.log10(1 + (fs / 2) / 700)
 
     mel_points = np.linspace(0, high_mel, n_filters + 2)
@@ -53,6 +51,7 @@ def extract_mfcc(audio_file, frame_length_ms=25,
 
     filterbank = np.zeros((n_filters, nfft // 2 + 1))
 
+    # Construct triangular Mel filters.
     for m in range(1, n_filters + 1):
         left, centre, right = bins[m - 1:m + 2]
 
@@ -66,15 +65,15 @@ def extract_mfcc(audio_file, frame_length_ms=25,
                 right - np.arange(centre, right)
             ) / (right - centre)
 
-    # 7. Compute log Mel filter energies.
+    # Compute Mel filter energies.
     energy = power @ filterbank.T
+
+    # ChatGPT assisted with understanding log-energy processing.
     log_energy = np.log(
         np.maximum(energy, np.finfo(float).eps)
     )
 
-    # AI-assisted learning (ChatGPT, OpenAI):
-    # ChatGPT explained the role of DCT and selecting 13 MFCCs.
-    # 8. Apply DCT and keep 13 MFCC coefficients.
+    # ChatGPT explained DCT and the selection of 13 MFCCs.
     mfcc = dct(
         log_energy,
         type=2,
@@ -85,7 +84,7 @@ def extract_mfcc(audio_file, frame_length_ms=25,
     return mfcc[:, :n_mfcc]
 
 
-# Test MFCC extraction.
+# Test MFCC extraction using one training WAV file.
 if __name__ == "__main__":
 
     project = Path.home() / "Desktop" / "Assessment001"

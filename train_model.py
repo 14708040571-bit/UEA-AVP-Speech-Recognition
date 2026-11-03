@@ -1,9 +1,4 @@
 
-# AI-assisted debugging (ChatGPT, OpenAI):
-# ChatGPT helped identify and remove a syntax error
-# in an earlier version of this script.
-# I reviewed and tested the corrected code myself.
-
 from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
@@ -12,11 +7,13 @@ import tensorflow as tf
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from tensorflow.keras import Sequential
-from tensorflow.keras.layers import Input, Conv2D, MaxPooling2D, Flatten, Dense, Dropout
+from tensorflow.keras.layers import (
+    Input, Conv2D, MaxPooling2D, Flatten, Dense, Dropout
+)
 from tensorflow.keras.callbacks import EarlyStopping
 
 
-# 1. Load data
+# 1. Load the MFCC training dataset.
 project = Path.home() / "Desktop" / "Assessment001"
 data = np.load(project / "data/processed/train_mfcc.npz")
 
@@ -29,7 +26,8 @@ print("Dataset:", X.shape)
 print("Classes:", len(names))
 
 
-# 2. Split training and validation data
+# 2. Split the training and validation datasets.
+# ChatGPT helped explain stratified data splitting.
 train_idx, val_idx = train_test_split(
     np.arange(len(y)),
     test_size=0.2,
@@ -44,13 +42,8 @@ print("Training:", len(y_train))
 print("Validation:", len(y_val))
 
 
-# 3. Normalisation
-
-# AI-assisted explanation (ChatGPT, OpenAI):
-# ChatGPT helped me understand feature normalisation,
-# including mean, standard deviation, and numerical stability.
-# I reviewed and tested the implementation myself.
-
+# 3. Normalise MFCC features.
+# ChatGPT helped with feature normalisation and numerical stability.
 mean = np.mean(X_train, axis=(0, 1), keepdims=True)
 std = np.std(X_train, axis=(0, 1), keepdims=True)
 std = np.where(std < 1e-8, 1.0, std)
@@ -59,10 +52,11 @@ X_train = ((X_train - mean) / std)[..., np.newaxis]
 X_val = ((X_val - mean) / std)[..., np.newaxis]
 
 
-# 4. Build CNN
+# 4. Build the CNN model.
 tf.keras.backend.clear_session()
 tf.keras.utils.set_random_seed(42)
 
+# ChatGPT helped explain the CNN layers and dropout.
 model = Sequential([
     Input(shape=X_train.shape[1:]),
     Conv2D(16, (3, 3), activation="relu"),
@@ -84,7 +78,8 @@ model.compile(
 model.summary()
 
 
-# 5. Train CNN
+# 5. Train the CNN model.
+# ChatGPT helped explain early stopping and restoring model weights.
 stop = EarlyStopping(
     monitor="val_loss",
     patience=5,
@@ -101,7 +96,7 @@ history = model.fit(
 )
 
 
-# 6. Validation results
+# 6. Evaluate validation performance.
 val_loss, val_acc = model.evaluate(X_val, y_val, verbose=0)
 predictions = np.argmax(model.predict(X_val, verbose=0), axis=1)
 best_epoch = np.argmin(history.history["val_loss"]) + 1
@@ -117,7 +112,7 @@ print(f"Correct: {correct}")
 print(f"Wrong: {wrong}")
 
 
-# 7. Show prediction errors
+# 7. Display incorrectly classified recordings.
 print("\nMisclassified samples:")
 
 for i in range(len(y_val)):
@@ -128,7 +123,8 @@ for i in range(len(y_val)):
         )
 
 
-# 8. Confusion matrix
+# 8. Generate the validation confusion matrix.
+# ChatGPT assisted with understanding the confusion matrix.
 cm = confusion_matrix(y_val, predictions)
 
 fig, ax = plt.subplots(figsize=(12, 12))
@@ -142,7 +138,7 @@ plt.tight_layout()
 plt.show()
 
 
-# 9. Accuracy and loss graphs
+# 9. Display training and validation graphs.
 for metric in ["accuracy", "loss"]:
     plt.figure(figsize=(8, 5))
     plt.plot(history.history[metric], label="Training")
@@ -156,6 +152,7 @@ for metric in ["accuracy", "loss"]:
     plt.show()
 
 
+# 10. Summarise the selected model.
 print("\nSELECTED MODEL")
 print("Feature: MFCC")
 print("CNN filters: 16, 32")
@@ -164,4 +161,3 @@ print("Dropout: 0.3")
 print("Batch size: 16")
 print(f"Validation accuracy: {val_acc * 100:.2f}%")
 print(f"Best epoch: {best_epoch}")
-

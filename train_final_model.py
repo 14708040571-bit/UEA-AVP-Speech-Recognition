@@ -4,10 +4,12 @@ import numpy as np
 import tensorflow as tf
 
 from tensorflow.keras import Sequential
-from tensorflow.keras.layers import Input, Conv2D, MaxPooling2D, Flatten, Dense, Dropout
+from tensorflow.keras.layers import (
+    Input, Conv2D, MaxPooling2D, Flatten, Dense, Dropout
+)
 
 
-# 1. File paths
+# 1. File paths.
 project = Path.home() / "Desktop" / "Assessment001"
 dataset_file = project / "data/processed/train_mfcc.npz"
 
@@ -18,7 +20,7 @@ model_file = model_folder / "final_speech_model.keras"
 stats_file = model_folder / "normalisation_stats.npz"
 
 
-# 2. Load all 400 training recordings
+# 2. Load all 400 development recordings.
 data = np.load(dataset_file)
 
 X = data["X"].copy()
@@ -32,13 +34,18 @@ if X.shape != (400, 199, 13) or len(names) != 20:
     raise ValueError("Unexpected training data")
 
 
-# 3. Normalise features
+# 3. Normalise MFCC features.
+# ChatGPT helped explain feature normalisation and
+# numerical stability when calculating standard deviation.
+
 mean = np.mean(X, axis=(0, 1), keepdims=True)
 std = np.std(X, axis=(0, 1), keepdims=True)
 std = np.where(std < 1e-8, 1.0, std)
 
 X = ((X - mean) / std)[..., np.newaxis]
 
+
+# Save the normalisation parameters for testing and prediction.
 np.savez(
     stats_file,
     feature_mean=mean,
@@ -47,10 +54,11 @@ np.savez(
 )
 
 
-# 4. Build CNN
+# 4. Build the final CNN.
 tf.keras.backend.clear_session()
 tf.keras.utils.set_random_seed(42)
 
+# ChatGPT helped explain the CNN architecture and dropout.
 model = Sequential([
     Input(shape=X.shape[1:]),
     Conv2D(16, (3, 3), activation="relu"),
@@ -58,7 +66,6 @@ model = Sequential([
     Conv2D(32, (3, 3), activation="relu"),
     MaxPooling2D((2, 2)),
     Flatten(),
-
     Dense(64, activation="relu"),
     Dropout(0.3),
     Dense(len(names), activation="softmax")
@@ -73,9 +80,12 @@ model.compile(
 model.summary()
 
 
+# 5. Train the final CNN.
 # AI-assisted learning (ChatGPT, OpenAI):
-# ChatGPT explained retraining on all 400 development samples after validation.
-# 5. Train final model for 16 epochs
+# ChatGPT helped explain why the final model was retrained
+# on all 400 development recordings after model selection.
+# The selected training configuration was retained.
+
 model.fit(
     X, y,
     epochs=16,
@@ -84,7 +94,7 @@ model.fit(
 )
 
 
-# 6. Check training accuracy
+# 6. Evaluate training performance.
 train_loss, train_acc = model.evaluate(X, y, verbose=0)
 
 print("\nFINAL TRAINING SUMMARY")
@@ -98,7 +108,7 @@ print("Dropout: 0.3")
 print("Batch size: 16")
 
 
-# 7. Save final model
+# 7. Save the final trained model.
 model.save(model_file)
 
 print("\nModel saved to:", model_file)
