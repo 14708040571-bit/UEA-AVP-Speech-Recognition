@@ -81,13 +81,12 @@ MFCC achieved the highest selected-model validation accuracy among the three fea
 | Correct independent test predictions | 33 / 100 |
 | Incorrect independent test predictions | 67 / 100 |
 
-The independent test accuracy was substantially lower than the validation accuracy, indicating limited generalisation to separately collected recordings.
+The selected-model validation accuracy was 81.25%, while the independent test accuracy was 33.00%, a difference of 48.25 percentage points.
 
-Possible contributing factors include the small development dataset, differences in pronunciation and recording conditions, and variations in speech timing.
+This suggests that the final CNN had limited generalisation to separately collected recordings. Possible contributing factors include the relatively small development dataset, differences in recording conditions, and variations in pronunciation and speech timing.
 
-These results are reported separately because validation performance does not necessarily represent performance on unseen recordings.
+Further investigation would be needed to determine the main cause of this performance gap. Validation and independent test results are reported separately because validation performance does not necessarily represent performance on unseen recordings.
 
-The difference between validation accuracy (81.25%) and independent test accuracy (33.00%) was 48.25 percentage points. This suggests that the model did not generalise well to the separately recorded test dataset. Although MFCC features performed best during model selection, the final CNN showed limited robustness when evaluated on new recordings. Possible reasons include the small dataset size, differences in recording conditions, and variations in pronunciation and speech timing. Further investigation would be needed to determine the main cause of this performance gap.
 ## Project Files
 
 The repository contains **14 Python scripts**. Six scripts form the main implementation and evaluation workflow, while eight supporting scripts document data collection, dataset preparation and additional experiments.
@@ -103,7 +102,7 @@ The repository contains **14 Python scripts**. Six scripts form the main impleme
 | `evaluate_test.py` | Evaluates the final model on independent test recordings |
 | `live_demo.py` | Performs recognition using microphone input or WAV files |
 
-These scripts represent the main feature extraction, model development, evaluation and demonstration stages.
+These six scripts represent the main feature extraction, model development, evaluation and demonstration stages.
 
 ### Supporting Scripts and Experiments (8)
 
@@ -118,14 +117,15 @@ These scripts represent the main feature extraction, model development, evaluati
 | `experiment_dropout_05.py` | Investigates dropout rate 0.5 |
 | `experiment_lr_0005.py` | Investigates learning rate 0.0005 |
 
-These files are included to document the wider project workflow and experimental process.
+These scripts are included to document the wider project workflow and experimental process.
 
 ### Additional Files
 
 - `requirements.txt` — Python package dependencies
 - `models/` — Trained CNN model and normalisation statistics
 - `results/` — Evaluation results and project outputs
-- `development_evidence/` — Screenshots of local development
+- `development_evidence/` — Screenshots documenting local development
+- `presentation/` — Project presentation slides
 - `.gitignore` — Excludes local recordings, datasets and unnecessary generated files
 
 ## Running the Project
@@ -138,7 +138,23 @@ Install the required Python packages:
 pip install -r requirements.txt
 ```
 
-The saved CNN model and normalisation statistics are available in the `models/` directory.
+### Model and Data Files
+
+The trained CNN model and normalisation statistics are included in the repository's `models/` directory.
+
+The `live_demo.py` script first attempts to load these files from the repository. If they are unavailable, it attempts to load them from the original local project directory.
+
+The script displays the model file path when the model is successfully loaded.
+
+The saved-model demonstration can run without the original training dataset. However, reproducing the training experiments and independent test evaluation requires the original recordings and processed datasets.
+
+These datasets are stored locally and are not included in this repository.
+
+Some data preparation and training scripts still use the original local project path:
+
+`~/Desktop/Assessment001`
+
+These paths may need to be adjusted when running the project on another computer.
 
 ### Live Demonstration
 
@@ -155,21 +171,15 @@ The demonstration supports:
 - Displaying prediction scores
 - Displaying the top three predictions
 
-The system uses 16 kHz, 2-second audio recordings.
+Input WAV files must contain 2 seconds of audio sampled at 16 kHz.
 
-The demonstration loads a saved CNN model and normalisation statistics. Retraining is not required for inference.
+The demonstration uses the saved CNN model and normalisation statistics without retraining the model.
 
-### Local File Paths and Data
+When using microphone mode, the user can select an available audio input device. The device number depends on the computer and its connected audio devices.
 
-The original WAV recordings and processed datasets are stored locally and are not included in this repository.
+The script records 2 seconds of speech after a short countdown and displays the predicted spoken name and the three highest-scoring predictions.
 
-Some scripts use the local project directory:
-
-`~/Desktop/Assessment001`
-
-These paths may need to be adjusted when running the project on another computer.
-
-The Live Demo also supports loading saved model files from the repository, although its existing local model-path priority should be checked when using different model versions.
+Prediction scores indicate the model's relative confidence and do not guarantee that the prediction is correct.
 
 ## Limitations and Future Improvements
 
@@ -179,7 +189,7 @@ The Live Demo also supports loading saved model files from the repository, altho
 - Fixed 2-second input duration
 - Sensitivity to pronunciation and recording conditions
 - Lower independent test accuracy than validation accuracy
-- Local file-path and audio-device dependencies
+- Local file-path and audio-device dependencies in parts of the project
 
 ### Proposed Future Improvements
 
@@ -199,13 +209,13 @@ The GitHub repository was subsequently created to organise the existing project 
 
 The initial repository version contained the six main Python scripts. Additional scripts from the local project were later added to document data collection, dataset preparation and experimental work.
 
-Later commits also included code review, documentation updates, formatting changes and fixes to improve usability.
+Later commits also included code review, documentation updates, formatting changes and fixes to improve usability, including improvements to model-path handling and microphone selection.
 
 The original recordings and processed datasets remain stored locally rather than being uploaded to GitHub.
 
 Development screenshots are available in [development_evidence](development_evidence/).
 
-## AI Use Declaration
+Presentation slides are available in [presentation](presentation/).
 
 ## AI Use Declaration
 
@@ -213,15 +223,27 @@ I used ChatGPT (OpenAI) as an AI-assisted learning and development tool during t
 
 ChatGPT assisted me with understanding technical concepts, including MFCC feature extraction, Mel filterbanks, the Discrete Cosine Transform (DCT), feature normalisation, CNN training, validation and independent testing.
 
-I also used ChatGPT to assist with Python coding, debugging, code review and revisions to selected parts of the implementation. This included assistance with audio-device selection, recording input validation, audio quality checks, dataset validation, feature normalisation, CNN code organisation, prediction reporting and model-path handling. ChatGPT also helped identify a syntax error in an earlier version of `train_model.py`.
+I also used ChatGPT to assist with Python coding, debugging, code review and revisions across different parts of the project. This included assistance with audio-device selection, recording input validation, audio quality checks, dataset validation, feature extraction, feature normalisation, CNN training code, prediction reporting and model-path handling.
+
+Examples of project scripts associated with these development activities include:
+
+- `record_dataset.py` and `record_test_dataset.py` — Audio recording, microphone selection and input validation.
+- `check_audio_quality.py` — Audio quality checks and identification of potential recording problems.
+- `prepare_dataset.py` and `prepare_test_dataset.py` — Dataset preparation, feature processing and validation.
+- `feature_extraction.py` — Understanding and reviewing MFCC extraction, Mel filterbanks and DCT processing.
+- `train_model.py` — CNN training and validation, code review and debugging, including identifying a syntax error in an earlier version.
+- `train_final_model.py` — Understanding the final CNN training process and saved-model workflow.
+- `evaluate_test.py` — Understanding independent test evaluation and reporting model performance.
+- `live_demo.py` — Microphone selection, prediction reporting and model-path handling.
+
+These examples identify relevant scripts and development activities; they do not imply that ChatGPT independently wrote every script or made changes to every file. Its role varied between conceptual explanation, coding suggestions, debugging assistance and code review.
 
 ChatGPT also assisted with documentation editing, GitHub organisation and the preparation of presentation materials.
 
-I reviewed and tested the implementation and recorded the experimental results from my local development environment.
-
-I take responsibility for understanding and explaining the implementation, design decisions and evaluation results.
+I reviewed the suggested changes, tested the implementation and recorded the experimental results from my local development environment. I take responsibility for understanding and explaining the final implementation, design decisions and evaluation results.
 
 During the assessed bench demonstration, I intend to explain and demonstrate the project independently, in accordance with the module's assessment requirements.
+
 ---
 
 **University of East Anglia | Audio-Visual Processing**
