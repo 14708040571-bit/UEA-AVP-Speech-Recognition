@@ -58,7 +58,7 @@ model = Sequential([
     Conv2D(32, (3, 3), activation="relu"),
     MaxPooling2D((2, 2)),
     Flatten(),
-    
+
     Dense(64, activation="relu"),
     Dropout(0.3),
     Dense(len(names), activation="softmax")
@@ -73,6 +73,8 @@ model.compile(
 model.summary()
 
 
+# AI-assisted learning (ChatGPT, OpenAI):
+# ChatGPT explained retraining on all 400 development samples after validation.
 # 5. Train final model for 16 epochs
 model.fit(
     X, y,
