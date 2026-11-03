@@ -221,31 +221,9 @@ Presentation slides are available in [presentation](presentation/).
 
 ## AI Use Declaration
 
-I used ChatGPT (OpenAI) as an AI-assisted learning and development tool during this coursework.
+I used ChatGPT (OpenAI) to support my learning and development during this coursework. It assisted with understanding technical concepts such as MFCC and CNN, as well as Python coding, debugging, code review, documentation and presentation preparation.
 
-ChatGPT assisted me with understanding technical concepts, including MFCC feature extraction, Mel filterbanks, the Discrete Cosine Transform (DCT), feature normalisation, CNN training, validation and independent testing.
-
-I also used ChatGPT to assist with Python coding, debugging, code review and revisions across different parts of the project. This included assistance with audio-device selection, recording input validation, audio quality checks, dataset validation, feature extraction, feature normalisation, CNN training code, prediction reporting and model-path handling.
-
-Examples of project scripts associated with these development activities include:
-
-- `record_dataset.py` and `record_test_dataset.py` — Audio recording, microphone selection and input validation.
-- `check_audio_quality.py` — Audio quality checks and identification of potential recording problems.
-- `prepare_dataset.py` and `prepare_test_dataset.py` — Dataset preparation, feature processing and validation.
-- `feature_extraction.py` — Understanding and reviewing MFCC extraction, Mel filterbanks and DCT processing.
-- `train_model.py` — CNN training and validation, code review and debugging, including identifying a syntax error in an earlier version.
-- `train_final_model.py` — Understanding the final CNN training process and saved-model workflow.
-- `evaluate_test.py` — Understanding independent test evaluation and reporting model performance.
-- `live_demo.py` — Microphone selection, prediction reporting and model-path handling.
-
-These examples identify relevant scripts and development activities; they do not imply that ChatGPT independently wrote every script or made changes to every file. Its role varied between conceptual explanation, coding suggestions, debugging assistance and code review.
-
-ChatGPT also assisted with documentation editing, GitHub organisation and the preparation of presentation materials.
-
-I reviewed the suggested changes, tested the implementation and recorded the experimental results from my local development environment. I take responsibility for understanding and explaining the final implementation, design decisions and evaluation results.
-
-During the assessed bench demonstration, I intend to explain and demonstrate the project independently, in accordance with the module's assessment requirements.
-
+I reviewed and tested the suggested changes, conducted the experiments, and take responsibility for the final implementation and results. I am able to explain and demonstrate my project independently.
 ---
 
 **University of East Anglia | Audio-Visual Processing**
